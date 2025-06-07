@@ -1,4 +1,3 @@
-
 '''
 Archivo con utilidades para la app
 ---------------------------
@@ -26,13 +25,17 @@ def graficar(x, y):
     ''' 
         Crear el grafico que se desea mostrar en HTML
     '''
+    x = list(x)
+    y = list(y)
+
     fig, ax = plt.subplots(figsize=(16, 9))
     ax.plot(x, y)
-    ax.get_xaxis().set_visible(False)
+    ax.set_xlabel('ID')
+    ax.set_ylabel('Edad')
+    ax.set_title('Comparativa de edades')
 
-    # Convertir ese grafico en una imagen para enviar por HTTP
-    # y mostrar en el HTML
-    image_html = io.BytesIO()
-    FigureCanvas(fig).print_png(image_html)
-    plt.close(fig)  # Cerramos la imagen para que no consuma memoria del sistema
-    return image_html
+    img = io.BytesIO()
+    fig.savefig(img, format='png')
+    img.seek(0)
+    plt.close(fig)
+    return img

@@ -16,7 +16,7 @@ http://127.0.0.1:5000/
 # Realizar HTTP POST con --> post.py
 
 import traceback
-from flask import Flask, request, jsonify, render_template, Response, redirect
+from flask import Flask, request, jsonify, render_template, Response, redirect, send_file
 
 import utils
 import persona
@@ -60,17 +60,17 @@ def personas():
         # Debe verificar si el limit y offset son válidos cuando
         # no son especificados en la URL
         
-        limit_str = str(request.args.get('limit'))
-        offset_str = str(request.args.get('offset'))
+        limit_ = (request.args.get('limit'))
+        offset_ = (request.args.get('offset'))
 
         limit = 0
         offset = 0
 
-        if(limit_str is not None) and (limit_str.isdigit()):
-            limit = int(limit_str)
+        if(limit_ is not None) and (limit_.isdigit()):
+            limit = int(limit_)
 
-        if(offset_str is not None) and (offset_str.isdigit()):
-            offset = int(offset_str)
+        if(offset_ is not None) and (offset_.isdigit()):
+            offset = int(offset_)
 
         result = persona.report(limit=limit, offset=offset)
         return jsonify(result)
@@ -120,24 +120,19 @@ def comparativa():
 
         x, y = persona.dashboard()
         image_html = utils.graficar(x, y)
-        return Response(image_html.getvalue(), mimetype='image/png')
+        return send_file(image_html, mimetype='image/png')
 
         # return "Alumno --> Realice la implementacion"
-    except:
+    except Exception:
         return jsonify({'trace': traceback.format_exc()})
-
-
-# Este método se ejecutará solo una vez
-# la primera vez que ingresemos a un endpoint
-@app.before_first_request
-def before_first_request_func():
-    # Crear aquí todas las bases de datos
-    persona.db.create_all()
-    print("Base de datos generada")
 
 
 if __name__ == '__main__':
     print('JMRG@Server start!')
+
+    with app.app_context():
+        persona.db.create_all()
+        print("Base de datos generada")
 
     # Lanzar server
     app.run(host="127.0.0.1", port=5000)

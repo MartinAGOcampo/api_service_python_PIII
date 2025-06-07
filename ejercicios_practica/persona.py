@@ -55,22 +55,11 @@ def report(limit=0, offset=0):
     return json_result_list
 
 def dashboard():
-
-    query = db.session.query(Persona)
-    
-    personas = []
-    ages = []
-
-    #personas = ["Jesus","Carlos","Maria"]
-    #ages = [43,50,67]
-    
-    for person in query:
-        per = {person.name}
-        personas.append(per)
-        ag = {person.age}
-        ages.append(ag)
-
-    return personas, ages
+    # Obtener todas las personas ordenadas por id
+    personas = db.session.query(Persona).order_by(Persona.id).all()
+    x = [p.id for p in personas]
+    y = [p.age for p in personas]
+    return list(x), list(y)
 
 if __name__ == "__main__":
     print("Test del modulo heart.py")
